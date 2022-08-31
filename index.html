@@ -4,57 +4,9 @@
 <?php 
     include '../dbconnect.php';
     include 'cek.php';
-
-    if(isset($_POST['update'])){
-        $idx = $_POST['idbrg'];
-        $nama = $_POST['nama'];
-        $jenis = $_POST['jenis'];
-        $merk = $_POST['merk'];
-        $ukuran = $_POST['ukuran'];
-        $satuan = $_POST['satuan'];
-        $lokasi = $_POST['lokasi'];
-
-        $updatedata = mysqli_query($conn,"update sstock_brg set nama='$nama', jenis='$jenis', merk='$merk', ukuran='$ukuran', satuan='$satuan', lokasi='$lokasi' where idx='$idx'");
-        
-        //cek apakah berhasil
-        if ($updatedata){
-
-            echo " <div class='alert alert-success'>
-                <strong>Success!</strong> Redirecting you back in 1 seconds.
-              </div>
-            <meta http-equiv='refresh' content='1; url= stock.php'/>  ";
-            } else { echo "<div class='alert alert-warning'>
-                <strong>Failed!</strong> Redirecting you back in 1 seconds.
-              </div>
-             <meta http-equiv='refresh' content='1; url= stock.php'/> ";
-            }
-    };
-
-    if(isset($_POST['hapus'])){
-        $idx = $_POST['idbrg'];
-
-        $delete = mysqli_query($conn,"delete from sstock_brg where idx='$idx'");
-        //hapus juga semua data barang ini di tabel keluar-masuk
-        $deltabelkeluar = mysqli_query($conn,"delete from sbrg_keluar where id='$idx'");
-        $deltabelmasuk = mysqli_query($conn,"delete from sbrg_masuk where id='$idx'");
-        
-        //cek apakah berhasil
-        if ($delete && $deltabelkeluar && $deltabelmasuk){
-
-            echo " <div class='alert alert-success'>
-                <strong>Success!</strong> Redirecting you back in 1 seconds.
-              </div>
-            <meta http-equiv='refresh' content='1; url= stock.php'/>  ";
-            } else { echo "<div class='alert alert-warning'>
-                <strong>Failed!</strong> Redirecting you back in 1 seconds.
-              </div>
-             <meta http-equiv='refresh' content='1; url= stock.php'/> ";
-            }
-    };
 	?>
 
 <head>
-
     <meta charset="utf-8">
 	<link rel="icon" 
       type="image/png" 
@@ -80,14 +32,6 @@
 	</script>
     <!-- amchart css -->
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
-	<!-- Start datatable css -->
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css">
-	
     <!-- others css -->
     <link rel="stylesheet" href="assets/css/typography.css">
     <link rel="stylesheet" href="assets/css/default-css.css">
@@ -95,9 +39,7 @@
     <link rel="stylesheet" href="assets/css/responsive.css">
     <!-- modernizr css -->
     <script src="assets/js/vendor/modernizr-2.8.3.min.js"></script>
-
 </head>
-
 
 <body>
     <!--[if lt IE 8]>
@@ -119,8 +61,8 @@
                 <div class="menu-inner">
                     <nav>
                         <ul class="metismenu" id="menu">
-							<li><a href="index.php"><span>Notes</span></a></li>
-                            <li class="active">
+							<li class="active"><a href="index.php"><span>Notes</span></a></li>
+                            <li>
                                 <a href="stock.php"><i class="ti-dashboard"></i><span>Input Data</span></a>
                             </li>
 							<li>
@@ -134,6 +76,7 @@
                                 <a href="logout.php"><span>Logout</span></a>
                                 
                             </li>
+                            
                             
                         </ul>
                     </nav>
@@ -210,36 +153,146 @@
                             <h4 class="page-title pull-left">Dashboard</h4>
                             <ul class="breadcrumbs pull-left">
                                 <li><a href="index.php">Home</a></li>
-                                <li><span>Input Data</span></li>
+                                <li><span>Dashboard</span></li>
                             </ul>
                         </div>
-                    </div>
-                    <div class="col-sm-6 clearfix">
-                        
                     </div>
                 </div>
             </div>
             <!-- page title area end -->
             <div class="main-content-inner">
-               
+                <!-- sales report area start 
+                <div class="sales-report-area mt-5 mb-5">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="single-report mb-xs-30">
+                                <div class="s-report-inner pr--20 pt--30 mb-3">
+                                    <div class="icon"><i class="fa fa-btc"></i></div>
+                                    <div class="s-report-title d-flex justify-content-between">
+                                        <h4 class="header-title mb-0">Bitcoin</h4>
+                                        <p>24 H</p>
+                                    </div>
+                                    <div class="d-flex justify-content-between pb-2">
+                                        <h2>$ 4567809,987</h2>
+                                        <span>- 45.87</span>
+                                    </div>
+                                </div>
+                                <canvas id="coin_sales1" height="100"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="single-report mb-xs-30">
+                                <div class="s-report-inner pr--20 pt--30 mb-3">
+                                    <div class="icon"><i class="fa fa-btc"></i></div>
+                                    <div class="s-report-title d-flex justify-content-between">
+                                        <h4 class="header-title mb-0">Bitcoin Dash</h4>
+                                        <p>24 H</p>
+                                    </div>
+                                    <div class="d-flex justify-content-between pb-2">
+                                        <h2>$ 4567809,987</h2>
+                                        <span>- 45.87</span>
+                                    </div>
+                                </div>
+                                <canvas id="coin_sales2" height="100"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="single-report">
+                                <div class="s-report-inner pr--20 pt--30 mb-3">
+                                    <div class="icon"><i class="fa fa-eur"></i></div>
+                                    <div class="s-report-title d-flex justify-content-between">
+                                        <h4 class="header-title mb-0">Euthorium</h4>
+                                        <p>24 H</p>
+                                    </div>
+                                    <div class="d-flex justify-content-between pb-2">
+                                        <h2>$ 4567809,987</h2>
+                                        <span>- 45.87</span>
+                                    </div>
+                                </div>
+                                <canvas id="coin_sales3" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- sales report area end -->
+                <!-- overview area start 
+                <div class="row">
+                    <div class="col-xl-9 col-lg-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="header-title mb-0">Overview</h4>
+                                    <select class="custome-select border-0 pr-3">
+                                        <option selected>Last 24 Hours</option>
+                                        <option value="0">01 July 2018</option>
+                                    </select>
+                                </div>
+                                <div id="verview-shart"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 coin-distribution">
+                        <div class="card h-full">
+                            <div class="card-body">
+                                <h4 class="header-title mb-0">Coin Distribution</h4>
+                                <div id="coin_distribution"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- overview area end -->
                 <!-- market value area start -->
                 <div class="row mt-5 mb-5">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-sm-flex justify-content-between align-items-center">
-									<h2>Input Data Penduduk</h2>
-									
-                                </div>
-                                <div class="market-status-table mt-4">
-                                    <iframe src="https://forms.zohopublic.com/susrihaningsih28/form/DesaCantik2022/formperma/-mjcUzk7jFjBmAFd68WvWfmbn66jhoqDfs_bRm2Dflw" width="1000" height="500" frameborder="0" marginheight="0" marginwidth="0" >Memuat…</iframe>
+									<h2>Notes</h2>
 
-                                        </tbody>
-                                        </table>
-                                    </div>
-                                   
-                                                
-										</tbody>
+                                </div>
+                            
+                                    <div class="table-responsive">
+										 <table class="table table-bordered table-hover"><thead class="thead-dark">  
+										<tr>
+										 <th><center> No </center></th>
+										 <th><center> Catatan </center></th>
+										 <th><center> Ditulis oleh </center></th>
+										 <th><center> Action </center></th>
+
+
+										</tr></thead>
+										 <form method ='POST' action = 'notes.php'>
+										 <tr class="table-active">
+											<td><center><input type = 'hidden'/></center> </td>
+											<td><center> <input type = 'text' class='form-control' name = 'konten' required /></center> </td>
+											<td><center>Saya, <strong>Admin</strong> <span class="badge badge-secondary">Admin</span></center> </td>
+											<td><center><input type = 'submit' name = 'submit'  class='btn btn-primary btn-sm' value = 'Add Note'/></center></td>
+											<tr>
+										 </form>
+										<?php  
+										// Perintah untuk menampilkan data
+										$queri="Select * From notes where status='aktif' Order by id DESC" ;  //menampikan SEMUA data dari tabel
+
+										$hasil=MySQLi_query ($conn,$queri);    //fungsi untuk SQL
+
+										// nilai awal variabel untuk no urut
+										$i = 1;
+
+										// perintah untuk membaca dan mengambil data dalam bentuk array
+										while ($data = mysqli_fetch_array ($hasil)){
+										$id = $data['id'];
+										 echo "  <form method ='POST' action = 'done.php'>
+										  <tr>
+										  <td><center>".$i."</center></td>
+										  <td><strong><center>".$data['contents']."</center></strong></td>
+										  <td><strong><center>".$data['admin']."</center></strong></td>
+										  <td><center><input type = 'hidden' name = 'id' value = '".$data['id']."'> <input type='submit' name = 'submit'  class='btn btn-danger btn-sm' value = 'Delete' formaction='del.php' /></center></td>
+										  </form></td>
+										  </tr> </form>
+										  ";
+										 $i++; 
+										}
+										?>
 										</table>
                                     </div>
                                 </div>
@@ -254,7 +307,7 @@
         </div>
         <!-- main content area end -->
         <!-- footer area start-->
-         
+       
         <footer class="main-footer">
     <div class="pull-right">
         <img src="../BPS.png" alt="BPS" width="40px">
@@ -263,35 +316,13 @@
 </footer>
 
 
-        
+
         <!-- footer area end-->
     </div>
-   
-	<script>
-		$(document).ready(function() {
-		$('input').on('keydown', function(event) {
-			if (this.selectionStart == 0 && event.keyCode >= 65 && event.keyCode <= 90 && !(event.shiftKey) && !(event.ctrlKey) && !(event.metaKey) && !(event.altKey)) {
-			   var $t = $(this);
-			   event.preventDefault();
-			   var char = String.fromCharCode(event.keyCode);
-			   $t.val(char + $t.val().slice(this.selectionEnd));
-			   this.setSelectionRange(1,1);
-			}
-		});
-	});
-	
-	$(document).ready(function() {
-    $('#dataTable3').DataTable( {
-        dom: 'Bfrtip',
-        buttons: [
-            'print'
-        ]
-    } );
-	} );
-	</script>
-	
-	<!-- jquery latest version -->
-    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <!-- page container area end -->
+
+    <!-- jquery latest version -->
+    <script src="assets/js/vendor/jquery-2.2.4.min.js"></script>
     <!-- bootstrap 4 js -->
     <script src="assets/js/popper.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
@@ -299,15 +330,7 @@
     <script src="assets/js/metisMenu.min.js"></script>
     <script src="assets/js/jquery.slimscroll.min.js"></script>
     <script src="assets/js/jquery.slicknav.min.js"></script>
-		<!-- Start datatable js -->
-	 <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
-    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
-	<script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+
     <!-- start chart js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
     <!-- start highcharts js -->
@@ -325,8 +348,6 @@
     <!-- others plugins -->
     <script src="assets/js/plugins.js"></script>
     <script src="assets/js/scripts.js"></script>
-	
-	
 </body>
 
 </html>

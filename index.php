@@ -3,7 +3,7 @@ session_start();
 include 'dbconnect.php';
 
 if(isset($_SESSION['role'])){
-	header("location:stock.php");
+	header("location:stock");
 }
 
 if(isset($_GET['pesan'])){

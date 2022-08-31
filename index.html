@@ -34,7 +34,7 @@ if($cek > 0){
  
 	$data = mysqli_fetch_assoc($login);
  
- if($data['role']=="stock.php"){
+ if($data['role']=="stock"){
 		// buat session login dan username
 		$_SESSION['user'] = $data['nickname'];
 		$_SESSION['user_login'] = $data['username'];
